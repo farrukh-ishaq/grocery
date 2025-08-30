@@ -1,2 +1,0 @@
-# grocery
-webapp, mobile app
