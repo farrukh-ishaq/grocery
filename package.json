@@ -1,0 +1,20 @@
+{
+  "name": "grocery-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=grocer-ui",
+    "dev:mobile": "npm run start --workspace=grocer-mobile",
+    "dev:backend": "npm run dev --workspace=grocer",
+    "dev": "npm run dev:web & npm run dev:mobile & npm run dev:backend",
+    "build:web": "npm run build --workspace=grocer-ui",
+    "build:mobile": "npm run build --workspace=grocer-mobile",
+    "build:backend": "npm run build --workspace=grocer",
+    "clean": "rimraf node_modules */*/node_modules"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  }
+}
