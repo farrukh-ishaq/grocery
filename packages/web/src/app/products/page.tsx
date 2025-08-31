@@ -1,4 +1,3 @@
-// app/products/page.tsx
 import ProductCard from '@/app/components/ProductCard'
 import ProductSearch from '@/app/components/ProductSearch'
 import SortDropdown from '@/app/components/SortDropdown'
@@ -10,12 +9,14 @@ interface ProductsPageProps {
         q?: string
         page?: string
         sort?: string
+        category?: string // Changed from collection to category
     }>
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
     const params = await searchParams
     const searchQuery = params.q
+    const categoryFilter = params.category // Changed from collection to category
     const page = parseInt(params.page || '1')
     const sort = params.sort || 'created_at'
     const limit = 12
@@ -23,16 +24,31 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
     let products: Product[] = [];
     let totalCount = 0
+    let currentCategory = null
 
     try {
+        // First, try to get the category name for display
+        if (categoryFilter) {
+            try {
+                const categoryResponse = await medusa.productCategories.retrieve(categoryFilter)
+                currentCategory = categoryResponse.product_category
+            } catch (error) {
+                console.error('Error fetching category details:', error)
+            }
+        }
+
+        // Fetch products with optional category filter
         const response = await medusa.products.list({
             ...(searchQuery && { q: searchQuery }),
+            ...(categoryFilter && { category_id: categoryFilter }), // Use category_id filter
             limit,
             offset,
             order: sort
         })
+
         products = response.products
         totalCount = response.count || 0
+
     } catch (error) {
         console.error('Error fetching products:', error)
         products = []
@@ -43,15 +59,23 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header */}
+                {/* Header with category info */}
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-4">Our Products</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                        {categoryFilter
+                            ? `Category: ${currentCategory?.name || categoryFilter}`
+                            : 'Our Products'
+                        }
+                    </h1>
                     <p className="text-gray-600 max-w-2xl mx-auto">
-                        Discover our wide range of high-quality products.
+                        {categoryFilter
+                            ? `Browse products in ${currentCategory?.name || 'this category'}`
+                            : 'Discover our wide range of high-quality products.'
+                        }
                     </p>
                 </div>
 
-                {/* Search */}
+                {/* Search and Filters */}
                 <div className="mb-8">
                     <ProductSearch initialQuery={searchQuery} />
                 </div>
@@ -59,13 +83,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 {/* Results Header */}
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-semibold">
-                        {searchQuery ? `Search Results for "${searchQuery}"` : 'All Products'}
+                        {searchQuery ? `Search Results for "${searchQuery}"` :
+                            categoryFilter ? `Products in ${currentCategory?.name || 'Category'}` : 'All Products'}
                         <span className="text-gray-500 text-sm ml-2">
               ({products.length} of {totalCount} {totalCount === 1 ? 'product' : 'products'})
             </span>
                     </h2>
 
-                    {!searchQuery && (
+                    {!searchQuery && !categoryFilter && (
                         <SortDropdown currentSort={sort} />
                     )}
                 </div>
@@ -73,7 +98,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 {/* Products Grid */}
                 {products.length === 0 ? (
                     <div className="text-center py-12">
-                        <p className="text-gray-500">No products found</p>
+                        <p className="text-gray-500">
+                            {categoryFilter
+                                ? `No products found in this category`
+                                : 'No products found'
+                            }
+                        </p>
+                        {categoryFilter && (
+                            <a href="/products" className="text-blue-500 hover:text-blue-700 mt-2 inline-block">
+                                View all products
+                            </a>
+                        )}
                     </div>
                 ) : (
                     <>
@@ -83,8 +118,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                             ))}
                         </div>
 
-                        {/* Pagination */}
-                        {totalPages > 1 && !searchQuery && (
+                        {/* Pagination - show only if not filtering */}
+                        {totalPages > 1 && !searchQuery && !categoryFilter && (
                             <div className="flex justify-center mt-12">
                                 <nav className="flex items-center space-x-2">
                                     {page > 1 && (
