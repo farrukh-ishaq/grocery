@@ -5,6 +5,8 @@
     "packages/*"
   ],
   "scripts": {
+    "docker:up": "docker-compose -f ./packages/app-setup/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f ./packages/app-setup/docker-compose.yml down",
     "dev:web": "npm run dev --workspace=grocer-ui",
     "dev:mobile": "npm run start --workspace=grocer-mobile",
     "dev:backend": "npm run dev --workspace=grocer",

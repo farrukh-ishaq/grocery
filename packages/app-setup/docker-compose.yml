@@ -5,7 +5,7 @@ services:
     image: postgres:15
     container_name: medusa-postgres
     environment:
-      POSTGRES_DB: medusa-db
+      POSTGRES_DB: medusa-grocer
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: supersecret
     ports:
@@ -15,5 +15,16 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: medusa-redis
+    command: [ "redis-server", "--appendonly", "yes" ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  redis_data:
