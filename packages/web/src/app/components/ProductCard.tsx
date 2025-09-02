@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Product } from "grocer/.medusa/types/query-entry-points"
-import { formatPrice } from '@/app/lib/utils'
+import { formatPrice } from '@/app/lib/formatPrice'
 import AddToCartButton from './AddToCartButton'
+import {productService} from "@/app/services/productService";
 
 interface ProductCardProps {
     product: Product
@@ -12,17 +13,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     // Extract price safely
-    const getPrice = (): number => {
-        const variant = product.variants?.[0];
-        if (!variant) return 0;
-
-        // Use price_set or fallback to price_set_link?.price_set
-        const priceSet = variant.price_set ?? variant.price_set_link?.price_set;
-        const price = priceSet?.prices?.[0]?.amount ?? 0;
-        return price;
-    };
-
-    const price = getPrice()
+    const price = productService.getProductPrice(product) || 0
     const imageUrl = product.thumbnail || product.images?.[0]?.url
     const hasImage = !!imageUrl
     const variantId = product.variants?.[0]?.id

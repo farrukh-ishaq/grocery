@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
 import './globals.css'
-import {CartProvider} from "@/app/context/CartContext";
+import {CartProvider} from "@/app/contexts/CartContext";
 
 export const metadata: Metadata = {
     title: 'GrocerStore - Fresh Products Delivered',

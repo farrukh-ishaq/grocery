@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { useCart } from '@/app/context/CartContext'
+import { useCart } from '@/app/contexts/CartContext'
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)

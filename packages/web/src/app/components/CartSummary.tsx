@@ -1,7 +1,7 @@
 'use client'
 
-import { useCart } from "@/app/context/CartContext"
-import { formatPrice } from "@/app/lib/utils"
+import { useCart } from "@/app/contexts/CartContext"
+import { formatPrice } from "@/app/lib/formatPrice"
 
 export default function CartSummary() {
     const { cart } = useCart()

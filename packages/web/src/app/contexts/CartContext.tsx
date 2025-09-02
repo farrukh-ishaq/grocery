@@ -19,7 +19,7 @@ interface Cart {
 interface CartContextType {
     cart: Cart | null
     isLoading: boolean
-    addItem: (variantId: string, quantity?: number, price?: number) => Promise<void>
+    addItem: (variantId: string, quantity?: number) => Promise<void>
     updateItem: (lineItemId: string, quantity: number) => Promise<void>
     removeItem: (lineItemId: string) => Promise<void>
     getItemQuantity: (variantId: string) => number
@@ -54,10 +54,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                         }
                     )
                     currentCart = response.cart
-                    if(currentCart?.id)
+                    if(currentCart)
                         localStorage.setItem("cart_id", currentCart.id)
                     else
-                        console.error("Cart ID is undefined")
+                        console.error("Current cart is null after creation")
                 }
 
                 setCart(currentCart)
@@ -71,7 +71,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         initializeCart()
     }, [])
 
-    const addItem = async (variantId: string, quantity: number = 1, price?: number) => {
+    const addItem = async (variantId: string, quantity: number = 1) => {
         if (!cart) return
 
         try {
@@ -79,15 +79,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 variant_id: variantId,
                 quantity,
             })
-            const newItem = response.cart.items.map((item: LineItem) => ({
-                ...item,
-                price: price // cents
-            }))
-
-            setCart({
-                ...response.cart,
-                items: newItem
-            })
+            setCart(response.cart)
         } catch (error) {
             console.error("Failed to add item:", error)
         }
