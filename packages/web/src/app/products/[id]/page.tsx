@@ -7,11 +7,11 @@ import ProductImage from "@/app/components/ProductImage";
 import { formatPrice } from "@/app/lib/formatPrice";
 
 interface ProductPageProps {
-    params: { id: string }
+    params: Promise<{ id: string }>  // params is async
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { id } = params
+    const { id } = await params
     const product = await productService.getProductById(id)
 
     if (!product) {
@@ -51,9 +51,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                 {product.title}
                             </h1>
                             <div className="flex items-center mb-4">
-                <span className="text-2xl font-bold text-primary">
-                  {formatPrice(price ?? 0)}
-                </span>
+                                <span className="text-2xl font-bold text-primary">
+                                    {formatPrice(price ?? 0)}
+                                </span>
                             </div>
                         </div>
 

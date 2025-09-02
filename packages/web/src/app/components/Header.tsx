@@ -24,7 +24,7 @@ export default function Header() {
     }
 
     return (
-        <header className="bg-white shadow-sm border-b">
+        <header className="sticky top-0 z-50 bg-white shadow-sm border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Back button (not on homepage) */}
@@ -104,7 +104,8 @@ export default function Header() {
                                 />
                             </svg>
                             {cartCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                <span
+                                    className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {cartCount}
                 </span>
                             )}
