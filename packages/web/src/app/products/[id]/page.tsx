@@ -1,24 +1,24 @@
 // app/products/[id]/page.tsx
 import { notFound } from 'next/navigation'
 import AddToCartButton from '@/app/components/AddToCartButton'
-import {productService} from "@/app/services/productService";
+import { productService } from "@/app/services/productService";
 import Breadcrumb from "@/app/components/Breadcrumb";
 import ProductImage from "@/app/components/ProductImage";
-import {formatPrice} from "@/app/lib/formatPrice";
+import { formatPrice } from "@/app/lib/formatPrice";
 
 interface ProductPageProps {
-    params: Promise<{ id: string }>
+    params: { id: string }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { id } = await params
+    const { id } = params
     const product = await productService.getProductById(id)
 
     if (!product) {
         notFound()
     }
 
-    const price = productService.getProductPrice(product)
+    const price = await productService.getProductPrice(product.id)
     const mainImage = productService.getProductImageUrl(product)
     const variantId = productService.getFirstVariantId(product)
 
@@ -27,7 +27,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         { label: 'Products', href: '/products' },
         { label: product.title }
     ]
-        console.log('Rendering product page for:', product)
+
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             </h1>
                             <div className="flex items-center mb-4">
                 <span className="text-2xl font-bold text-primary">
-                  {formatPrice(price)}
+                  {formatPrice(price ?? 0)}
                 </span>
                             </div>
                         </div>

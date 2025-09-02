@@ -1,8 +1,8 @@
 import medusa from "@/app/lib/medusa"
-import { Product, ProductCategory } from "grocer/.medusa/types/query-entry-points"
+import {Product, ProductCategory, ProductVariant} from "grocer/.medusa/types/query-entry-points"
 
 // todo: move to env
-const REGION_ID = process.env.NEXT_PUBLIC_DEFAULT_REGION_ID || "reg_01K43DEVCMKZ1EJ0M7QDDK1NV1"
+const REGION_ID = "reg_01K43DEVCMKZ1EJ0M7QDDK1NV1"
 
 interface ProductFilters {
     q?: string
@@ -17,20 +17,19 @@ class ProductService {
      * Retrieve a product by ID with region context
      */
     async getProductById(id: string): Promise<Product | null> {
-        try {
-            const { product } = await medusa.products.retrieve(id, { region_id: REGION_ID })
-            return product
-        } catch (firstError) {
-            console.warn("[ProductService] Direct retrieval failed, fallback to list:", firstError)
-
             try {
-                const { products } = await medusa.products.list({ region_id: REGION_ID })
-                return products.find((p: Product) => p.id === id) || null
-            } catch (secondError) {
-                console.error("[ProductService] Both retrieval methods failed:", secondError)
+                const { products } = await medusa.products.list({
+                    fields: `*variants.prices`,
+                    region_id: REGION_ID })
+
+                // @ts-ignore
+                const productById = products.find(p => p.id === id) || null
+
+                return productById
+            } catch (e) {
+                console.error("[ProductService] Both retrieval methods failed:", e)
                 return null
             }
-        }
     }
 
     /**
@@ -73,17 +72,14 @@ class ProductService {
     /**
      * Extract the price from the first variant of a product
      */
-    getProductPrice(product: Product): number {
-        const variant = product.variants?.[0] as any  // bypass type checking
-        if (!variant) return 0
+    async getProductPrice(productId: string): Promise<number | null> {
+        const productById = await this.getProductById(productId)
+         // @ts-ignore
+        const price  = await productById?.variants?.[0]?.prices?.[0]?.amount
 
-        return (
-            variant.calculated_price?.calculated_amount ??
-            variant.price_set?.prices?.[0]?.amount ??
-            variant.order_items?.[0]?.unit_price ??
-            0
-        )
+        return price || 0
     }
+
 
 
     /**
