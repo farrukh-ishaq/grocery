@@ -53,8 +53,6 @@ export function useCategories(): UseCategoriesReturn {
                 limit: 100 // Get enough categories
             })
 
-            console.log('Product Categories response:', response) // Debug log
-
             // Transform Medusa product categories to UI categories
             const transformedCategories: Category[] = response.product_categories.map((category: MedusaProductCategory) => ({
                 id: category.id,

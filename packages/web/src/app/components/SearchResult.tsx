@@ -1,4 +1,3 @@
-// components/SearchResults.tsx
 'use client'
 
 import { Product } from "grocer/.medusa/types/query-entry-points";

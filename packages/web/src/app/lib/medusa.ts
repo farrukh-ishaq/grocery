@@ -6,4 +6,4 @@ const medusa = new Medusa({
     publishableApiKey: "pk_89e8f3bde7a55c29adaadfea682fe8aafc8d9b129508124722d7839602493910"
 })
 
-export default medusa
+export default medusa;

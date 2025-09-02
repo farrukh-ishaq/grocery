@@ -24,7 +24,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             console.log('First attempt failed, trying admin endpoint...')
             // If that fails, try listing and filtering
             const allProducts = await medusa.products.list()
-            product = allProducts.products.find(p => p.id === id) || null
+            product = allProducts.products.find((p: Product) => p.id === id) || null
         }
 
         if (!product) {
@@ -110,7 +110,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
                         {/* Add to Cart - Using Client Component */}
                         <div className="pt-6 border-t border-gray-200">
-                            <AddToCartButton productId={product.id} className="w-full" />
+                            <AddToCartButton variantId={product.variants[0].id} className="w-full" />
                         </div>
                     </div>
                 </div>
